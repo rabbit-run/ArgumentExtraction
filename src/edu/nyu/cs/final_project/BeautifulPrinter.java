@@ -23,6 +23,7 @@ public class BeautifulPrinter {
 			pw.println();
 		}
 		pw.println();
+		pw.flush();
 	}
 	
 	public static void printNodes(List<TreeGraphNode> nodes) {
@@ -31,10 +32,9 @@ public class BeautifulPrinter {
 		String prefix = "";
 		for (TreeGraphNode n : nodes) {
 			sb.append(prefix);
-			prefix = " ";
+			prefix = " | ";
 			sb.append(n.label().value());
 		}
-		sb.append(" ~~~len : " + nodes.size());
 		pw.println(sb.toString());
 		pw.flush();
 	}

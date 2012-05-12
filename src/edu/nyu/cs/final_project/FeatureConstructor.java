@@ -18,7 +18,7 @@ public class FeatureConstructor {
 		this.sent = sent;
 	}
 	
-	public Set<List<String>> genFeatures(){
+	public List<Set<String>> genFeatures(){
 		List<Set<String>> wordClassList = new ArrayList<Set<String>>();
 		for (TreeGraphNode tg: path) {
 			int index = -1;
@@ -33,7 +33,7 @@ public class FeatureConstructor {
 			Set<String> wordClasses = genWordClasses(index);
 			wordClassList.add(wordClasses);
 		}
-		return Sets.cartesianProduct(wordClassList);
+		return wordClassList;
 	}
 	
 	

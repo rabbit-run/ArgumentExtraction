@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.GrammaticalStructureFactory;
 import edu.stanford.nlp.trees.PennTreebankLanguagePack;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeGraphNode;
-import edu.stanford.nlp.trees.TreePrint;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 
@@ -30,24 +30,26 @@ public class Trees {
 		return t;
 	}
 	
-	public static List<TypedDependency> getRawTree(String sentence) {
+	public static List<TypedDependency> genRawTreeWithTag(List<? extends HasWord> sentence) {
+		lp.setOptionFlags( "-retainTmpSubcategories");
+//				"-tokenized",
+//				"-tagSeparator", "/", "-tokenizerFactory", "edu.stanford.nlp.process.WhitespaceTokenizer",
+//				"-tokenizerMethod", "newCoreLabelTokenizerFactory");
+		TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+		GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+
+		Tree parse = lp.apply(sentence);
+		GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
+		List<TypedDependency> tdl = gs.typedDependencies(false);
+		
+		return tdl;
+	}
+	
+	public static List<TypedDependency> genRawTree(String sentence) {
 		lp.setOptionFlags("-maxLength", "80", "-retainTmpSubcategories");
 		TreebankLanguagePack tlp = new PennTreebankLanguagePack();
 		GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-		TreePrint tp = new TreePrint("penn");
-		
-		//testing sentences
-//		String[] sent = { "This", "is", "an", "easy", "sentence", "." };
-//		List<HasWord> words = new ArrayList<HasWord>();
-//		for (String s: sent) {
-//			words.add(new Word(s));
-//		}
-//		String sentence = "But about 25% of the insiders, acording to SEC figures, " +
-//				"file their reports late.";
-//		String sentence1 = "Bills on ports and immigration were submitted by " +
-//				"Senator Brownback, Republican of Kansas.";
-//		String sentence2 = "Bell, based in Los Angeles, makes and distributes " +
-//				"electronic, computer and building products.";
+
 		Tree parse = lp.apply(sentence);
 		GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
 		List<TypedDependency> tdl = gs.typedDependencies(false);
@@ -70,6 +72,17 @@ public class Trees {
 			if (!td.gov().label().value().equals("ROOT")) {
 				if (!children.get(td.dep()).contains(td.gov())) {
 					children.get(td.dep()).add(td.gov());
+				}
+				if (null == td.gov()) {
+					System.out.println("gov");
+				}
+				if (null == td.dep()) {
+					System.out.println("dep");
+				}
+				if (null == children.get(td.gov())) {
+					System.out.println("relation : " + td);
+					
+					System.out.println("children");
 				}
 				if (!children.get(td.gov()).contains(td.dep())) {
 					children.get(td.gov()).add(td.dep());

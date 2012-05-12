@@ -1,6 +1,7 @@
 package edu.nyu.cs.final_project;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -16,11 +17,20 @@ public class InstanceExtractor {
 	
 	private List<Integer> findHeadWords() {
 		List<Integer> headWordsIndex = new ArrayList<Integer>();
-		for (int i = 0; i<sent.size(); i++){
+		for (int i = 0; i<sent.size()-1; i++){
 			String chunkTag = sent.get(i)[2];
 			if(chunkTag.equals("B-PP")){
-				headWordsIndex.add(i);
+				String nextChunkTag = sent.get(i+1)[2];
+				if (!nextChunkTag.equals("I-PP"))
+					headWordsIndex.add(i);
 			}
+			
+			if(chunkTag.equals("I-PP")) {
+				String nextChunkTag = sent.get(i+1)[2];
+				if (!nextChunkTag.equals("I-PP"))
+					headWordsIndex.add(i);
+			}
+			
 			if(chunkTag.equals("I-NP")) {
 				String nextChunkTag = sent.get(i+1)[2];
 				if (!nextChunkTag.equals("I-NP"))
@@ -34,6 +44,12 @@ public class InstanceExtractor {
 			}
 		}
 		
+		if (sent.get(sent.size()-1).equals("I-NP") ||
+				sent.get(sent.size()-1).equals("B-NP") ||
+				sent.get(sent.size()-1).equals("I-PP") ||
+				sent.get(sent.size()-1).equals("I-PP"))
+			headWordsIndex.add(sent.size()-1);			
+		
 		return headWordsIndex;
 	}
 	
@@ -46,7 +62,79 @@ public class InstanceExtractor {
 		return -1;
 	}
 	
-	public void getInstances() {
+	public void removePunctuation() {
+		Iterator<String[]> iter = sent.iterator();
+		while (iter.hasNext()){
+			String[] word = iter.next();
+			String literal = word[0];
+			String POStag = word[1];
+			if (
+//					literal.equals("COMMA") || 
+					literal.equals("'") ||
+					literal.equals("''") ||
+					literal.equals("--") ||
+					literal.equals(":") ||
+					literal.equals("-") ||
+					literal.equals(";") ||
+					literal.equals("...") ||
+					literal.equals("``") ||
+					POStag.equals(".")) {
+				iter.remove();
+			}
+		}
+	}
+	
+	private String findLabel(String[] word) {
+		if (word.length >= 6) {
+			String tmp = word[5];
+			if (tmp.equals("ARG0")) {
+				return "ARG0";
+			}
+			else if (tmp.equals("ARG1")) {
+				return "ARG1";
+			}
+			else if (tmp.equals("ARG2")) {
+				return "ARG2";
+			}
+			else if (tmp.equals("ARG3")) {
+				return "ARG3";
+			}
+		}
+		return "NA";
+	}
+	
+	public void getInstances(List<Instance> instances) {
+		// construct the dependency tree
+		List<TreeGraphNode> nodes = Trees.constructTree(Trees
+				.genRawTreeWithTag(formatSentence(sent)));
+		
+		// remove punctuation in the sentence, so that the index of 
+		// sent and nodes are the synchronized.
+		removePunctuation();
+
+		// test
+		int len = Math.max(sent.size(), nodes.size());
+//		System.out.println(sentenceLiteral(sent));
+		System.out.println("length of sent : " + sent.size());
+
+//		BeautifulPrinter.printNodes(nodes);
+		System.out.println("length of nodes : " + nodes.size());
+		System.out.println("length should be : " + len);		
+		System.out.println("sent    __    nodes");
+		for (int index = 0; index < len; index ++) {
+			System.out.println(sent.get(index)[0] + "  __  "
+					+ nodes.get(index).label().value());
+		}
+		
+		System.out.println();
+		
+		
+		if (sent.size()!=nodes.size()) {
+			System.out.println("Error: length not match");			
+			System.exit(-1);
+		}
+				
+		/*
 		// only consider head words
 		List<Integer> indexOfHeadWords = findHeadWords();
 		int indexOfPred = findPred();
@@ -62,20 +150,16 @@ public class InstanceExtractor {
 				// ARGM is not considered in this task, just ignore it
 				if (word.length == 6 && word[5].equals("ARGM"))
 					continue;
-				
 				// find shortest path, and generate the features.
-				List<TreeGraphNode> nodes = Trees.constructTree(Trees
-						.getRawTree(sentenceLiteral(sent)));
+				List<TreeGraphNode> path = Trees.findShortestPath(nodes, index, indexOfPred);
 				
-				BeautifulPrinter.printNodes(nodes);
-//				List<TreeGraphNode> path = Trees.findShortestPath(Trees.constructTree(Trees
-//						.getRawTree(sentenceLiteral(sent))), index, indexOfPred);
-//				
-//				FeatureConstructor fc = new FeatureConstructor(path, sent);
-//				Set<List<String>> res = fc.genFeatures();
-//				BeautifulPrinter.printFeature(res);
-				
+				FeatureConstructor fc = new FeatureConstructor(path, sent);
+				List<Set<String>> features = fc.genFeatures();
+				String label = findLabel(word);
+				instances.add(new Instance(label, features));
 			}
 		}
+		*/
 	}
+	
 }

@@ -1,40 +1,89 @@
 package edu.nyu.cs.final_project;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import edu.stanford.nlp.ling.HasWord;
-import edu.stanford.nlp.ling.Word;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
-import edu.stanford.nlp.trees.GrammaticalStructure;
-import edu.stanford.nlp.trees.GrammaticalStructureFactory;
-import edu.stanford.nlp.trees.PennTreebankLanguagePack;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreePrint;
-import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TreeGraphNode;
 import edu.stanford.nlp.trees.TypedDependency;
 
 public class Main {
 	public static void main(String[] args) {
 		testNow();
 	}
-
+	
+	// sentence 103, problem with char "-"
+	private static void testConstructTree() {
+		SentenceSplitter ss = new SentenceSplitter("dev");
+		List<List<String[]>> all = ss.getAllSentences();
+		Trees.initial();
+		List<String[]> sent = all.get(103);
+		List<TypedDependency> tdl = Trees.genRawTreeWithTag(Utility.formatSentence(sent));
+		for (TypedDependency t : tdl) {
+			System.out.println(t);
+		}
+		Trees.constructTree(tdl);
+	}
+	
+	// generate denpendency tree with pre tagged data
+	private static void testPreTag() {
+		SentenceSplitter ss = new SentenceSplitter("dev");
+		List<List<String[]>> all = ss.getAllSentences();
+		Trees.initial();
+		List<String[]> sent = all.get(52);
+		List<TreeGraphNode> nodes = Trees.constructTree(Trees.genRawTreeWithTag(Utility.formatSentence(sent)));
+		BeautifulPrinter.printNodes(nodes);
+	}
+	
+	private static void printSlash() {
+		System.out.println("/");
+	}
+	
+	private static void testReplace() {
+		List<String> sent = Lists.newArrayList("''", "." ,"asd", "bbb", ".", "''");
+		int i;
+		Iterator<String> iter = sent.iterator();
+		while(iter.hasNext()) {
+			String literal = iter.next();
+			if (literal.equals("COMMA") || 
+					literal.equals("'") ||
+					literal.equals("''") ||
+					literal.equals(".") ||
+					literal.equals("(") ||
+					literal.equals(")") ||
+					literal.equals("{") ||
+					literal.equals("}") ||
+					literal.equals("``")) {
+				iter.remove();
+			}
+		}
+		for (String s : sent ){
+			System.out.println(s);
+		}
+	}
+	
+	private static void testRmPunc() {
+		SentenceSplitter ss = new SentenceSplitter("dev");
+		List<List<String[]>> all = ss.getAllSentences();
+		List<String[]> sent = all.get(2);
+		InstanceExtractor ie = new InstanceExtractor(sent);
+		ie.removePunctuation();
+		System.out.println(Utility.sentenceLiteral(sent) + " ~~~len : " + sent.size());
+	}
+	
 	private static void testNow() {
-		SentenceSplitter ss = new SentenceSplitter("training");
+		SentenceSplitter ss = new SentenceSplitter("dev");
 		List<List<String[]>> all = ss.getAllSentences();
 		
-		
 		List<String[]> sent = all.get(0);
-		Trees.initial();
-		System.out.println(Utility.sentenceLiteral(sent) + " ~~~len : " + sent.size());
-		InstanceExtractor ie = new InstanceExtractor(sent);
-		ie.getInstances();
+		Utility.constructFeatureFile(all);
+//		System.out.println(Utility.sentenceLiteral(sent) + " ~~~len : " + sent.size());
+
 	}
 
 	private static void testSetAddNull() {
