@@ -1,6 +1,8 @@
 package edu.nyu.cs.final_project;
 
-import java.util.LinkedList;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -9,21 +11,30 @@ import com.google.common.collect.Lists;
 import edu.stanford.nlp.ling.TaggedWord;
 
 public class Utility {
-	public static void constructFeatureFile(List<List<String[]>> sentences) {
-		Trees.initial();
-		List<Instance> instances = new LinkedList<Instance>();
-		// generate sample instances
-		
-//		for (List<String[]> sent : sentences) {
-		for (int index = 0; index < sentences.size(); index++){
-			List<String[]>sent = sentences.get(index);
-			InstanceExtractor ie = new InstanceExtractor(sent);
-			System.out.println("sent number : " + index);
-			ie.getInstances(instances);
-		}
-		System.out.println("This could be huge ~ : " + instances.size());
+	@SuppressWarnings("unchecked")
+	public static List<Instance> deserialize() {
+		List<Instance> ins = null;
+		try
+        {
+           FileInputStream fileIn =
+                         new FileInputStream("instances.ser");
+           ObjectInputStream in = new ObjectInputStream(fileIn);
+           ins = (List<Instance>) in.readObject();
+           in.close();
+           fileIn.close();
+       }catch(IOException i)
+       {
+           i.printStackTrace();
+           System.exit(1);
+       }catch(ClassNotFoundException c)
+       {
+           System.out.println("Employee class not found.");
+           c.printStackTrace();
+           System.exit(1);
+       }
+		return ins;
 	}
-
+	
 	public static <T> int similar(Set<T> setA, Set<T> setB) {
 		int count = 0;
 		for (T x : setA)

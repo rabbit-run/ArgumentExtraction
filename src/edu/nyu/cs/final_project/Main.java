@@ -14,7 +14,26 @@ import edu.stanford.nlp.trees.TypedDependency;
 
 public class Main {
 	public static void main(String[] args) {
-		testNow();
+		if (args.length != 1) {
+			System.out.println("Error: please specify a file name");
+			System.exit(-1);
+		}
+		String fileName = args[0];
+		InstanceGenerator ig = new InstanceGenerator(fileName);
+		ig.genInstanceFile();
+	}
+	
+	private static void testDeserialize() {
+		List<Instance> il = Utility.deserialize();
+		List<Set<String>> features = il.get(0).getFeatures();
+		for (Set<String> s : features) {
+			System.out.println(s);
+		}
+	}
+	
+	private static void testInstanceGen() {
+		InstanceGenerator ig = new InstanceGenerator("test");
+		ig.genInstanceFile();
 	}
 	
 	// sentence 103, problem with char "-"
@@ -40,7 +59,7 @@ public class Main {
 		BeautifulPrinter.printNodes(nodes);
 	}
 	
-	private static void printSlash() {
+	private static void printSomeThing() {
 		System.out.println("/");
 	}
 	
@@ -81,7 +100,6 @@ public class Main {
 		List<List<String[]>> all = ss.getAllSentences();
 		
 		List<String[]> sent = all.get(0);
-		Utility.constructFeatureFile(all);
 //		System.out.println(Utility.sentenceLiteral(sent) + " ~~~len : " + sent.size());
 
 	}

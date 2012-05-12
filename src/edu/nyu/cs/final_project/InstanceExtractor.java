@@ -112,6 +112,7 @@ public class InstanceExtractor {
 		// sent and nodes are the synchronized.
 		removePunctuation();
 
+		/**
 		// test
 		int len = Math.max(sent.size(), nodes.size());
 //		System.out.println(sentenceLiteral(sent));
@@ -133,8 +134,8 @@ public class InstanceExtractor {
 			System.out.println("Error: length not match");			
 			System.exit(-1);
 		}
-				
-		/*
+		**/
+		
 		// only consider head words
 		List<Integer> indexOfHeadWords = findHeadWords();
 		int indexOfPred = findPred();
@@ -159,7 +160,6 @@ public class InstanceExtractor {
 				instances.add(new Instance(label, features));
 			}
 		}
-		*/
 	}
 	
 }

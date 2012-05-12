@@ -1,9 +1,14 @@
 package edu.nyu.cs.final_project;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-public class Instance {
+public class Instance implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String label;
 	private List<Set<String>> features;
 	
