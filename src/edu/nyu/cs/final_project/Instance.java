@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Instance implements Serializable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String label;
 	private List<Set<String>> features;

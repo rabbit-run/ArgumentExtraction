@@ -15,49 +15,34 @@ public class SVMFileFormatter {
 		this.fileName = fileName;
 	}
 	
-//	public int[][] computeDevKernel(List<Instance> devIns) {	
-//		int[][] matrix = new int[devIns.size()][ins.size()];
-//		int outter, inner, res;
-//		
-//		for (outter = 0; outter < devIns.size(); outter ++) {
-//			for (inner = 0; inner < ins.size(); inner ++) {
-//				res = Utility.kernel(devIns.get(outter), ins.get(inner));
-//				matrix[outter][inner] = res;
-//			}
-//		}
-//		return matrix;
-//	}
-	
-//	public int[][] computeTrainKernel() {
-//		int[][] matrix = new int[ins.size()][ins.size()];
-//		int outter, inner, res;
-//		
-//		for (outter = 0; outter < ins.size(); outter ++) {
-//			for (inner = outter; inner<ins.size(); inner++) {
-//				res = Utility.kernel(ins.get(outter), ins.get(inner));
-//				if(inner == outter){
-//					matrix[outter][outter] = res;
-//				}
-//				else {
-//					matrix[outter][inner] = res;
-//					matrix[inner][outter] = res;
-//				}
-//			}
-//
-//		}
-//		return matrix;
-//	}
-	
-	public void formatSVMFile() {
-		int[] kernels = new int[ins.size()];
+	public void formatDevFile(List<Instance> devIns, int bound) {
+		int[] kernels = new int[bound];
 		int outter, inner, res;
 		System.out.println("processing");
-		for (outter = 0; outter<ins.size(); outter++) {
+		for (outter = 0; outter<devIns.size(); outter++) {
 			//test
 			if (outter % 1000 == 0){
 				System.out.println("processed: " + outter);
 			}
-			for (inner = 0; inner<ins.size(); inner++) {
+			for (inner = 0; inner<bound; inner++) {
+				res = Utility.kernel(devIns.get(outter), ins.get(inner));
+				kernels[inner] = res;
+			}
+			String line = formatLine(ins.get(outter).getLabel(), kernels, outter);
+			appendToFile(line);
+		}	 
+	}
+	
+	public void formatSVMFile(int bound) {
+		int[] kernels = new int[bound];
+		int outter, inner, res;
+		System.out.println("processing");
+		for (outter = 0; outter<bound; outter++) {
+			//test
+			if (outter % 1000 == 0){
+				System.out.println("processed: " + outter);
+			}
+			for (inner = 0; inner<bound; inner++) {
 				res = Utility.kernel(ins.get(outter), ins.get(inner));
 				kernels[inner] = res;
 			}

@@ -84,21 +84,19 @@ public class Utility {
 		return twl;
 	}
 	
-	public static void convertLabel(Instance i) {
-		if (i.getLabel().equals("NA")) {
-			i.setLabel("-10");
-		}
-		else if (i.getLabel().equals("ARG0")) {
-			i.setLabel("00");
-		}
-		else if (i.getLabel().equals("ARG1")) {
-			i.setLabel("10");
-		}
-		else if (i.getLabel().equals("ARG2")) {
-			i.setLabel("20");
-		}
-		else if (i.getLabel().equals("ARG3")) {
-			i.setLabel("10");
+	public static void convertLabel(List<Instance> ins) {
+		for (Instance i : ins) {
+			if (i.getLabel().equals("NA")) {
+				i.setLabel("-10");
+			} else if (i.getLabel().equals("ARG0")) {
+				i.setLabel("00");
+			} else if (i.getLabel().equals("ARG1")) {
+				i.setLabel("10");
+			} else if (i.getLabel().equals("ARG2")) {
+				i.setLabel("20");
+			} else if (i.getLabel().equals("ARG3")) {
+				i.setLabel("10");
+			}
 		}
 	}
 	
