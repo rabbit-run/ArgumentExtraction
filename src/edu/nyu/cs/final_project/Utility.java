@@ -12,12 +12,12 @@ import edu.stanford.nlp.ling.TaggedWord;
 
 public class Utility {
 	@SuppressWarnings("unchecked")
-	public static List<Instance> deserialize() {
+	public static List<Instance> deserialize(String fileName) {
 		List<Instance> ins = null;
 		try
         {
            FileInputStream fileIn =
-                         new FileInputStream("instances.ser");
+                         new FileInputStream(fileName);
            ObjectInputStream in = new ObjectInputStream(fileIn);
            ins = (List<Instance>) in.readObject();
            in.close();
@@ -84,6 +84,39 @@ public class Utility {
 		return twl;
 	}
 	
+	public static void convertLabel(Instance i) {
+		if (i.getLabel().equals("NA")) {
+			i.setLabel("-10");
+		}
+		else if (i.getLabel().equals("ARG0")) {
+			i.setLabel("00");
+		}
+		else if (i.getLabel().equals("ARG1")) {
+			i.setLabel("10");
+		}
+		else if (i.getLabel().equals("ARG2")) {
+			i.setLabel("20");
+		}
+		else if (i.getLabel().equals("ARG3")) {
+			i.setLabel("10");
+		}
+	}
+	
+	public static String featuresToString(List<Set<String>> features) {
+		StringBuilder sb = new StringBuilder();
+		for (Set<String> feature : features) {
+			sb.append("[");
+			String prefix = "";
+			for (String s : feature) {
+				sb.append(prefix);
+				prefix = ", ";
+				sb.append(s);
+			}
+			sb.append("] ");
+		}
+		
+		return sb.toString();
+	}
 	
 	public static String sentenceLiteral(List<String[]> sent){
 		String prefix = "";

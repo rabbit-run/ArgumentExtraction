@@ -69,7 +69,7 @@ public class InstanceExtractor {
 			String literal = word[0];
 			String POStag = word[1];
 			if (
-//					literal.equals("COMMA") || 
+					literal.equals("`") || 
 					literal.equals("'") ||
 					literal.equals("''") ||
 					literal.equals("--") ||
@@ -97,13 +97,13 @@ public class InstanceExtractor {
 				return "ARG2";
 			}
 			else if (tmp.equals("ARG3")) {
-				return "ARG3";
+				return "ARG1";
 			}
 		}
 		return "NA";
 	}
 	
-	public void getInstances(List<Instance> instances) {
+	public boolean getInstances(List<Instance> instances) {
 		// construct the dependency tree
 		List<TreeGraphNode> nodes = Trees.constructTree(Trees
 				.genRawTreeWithTag(formatSentence(sent)));
@@ -112,6 +112,11 @@ public class InstanceExtractor {
 		// sent and nodes are the synchronized.
 		removePunctuation();
 
+		if (sent.size() != nodes.size()) {
+			System.out.println("sent\tnode");
+			System.out.println(sent.size()+"\t"+nodes.size());
+			return false;
+		}
 		/**
 		// test
 		int len = Math.max(sent.size(), nodes.size());
@@ -160,6 +165,7 @@ public class InstanceExtractor {
 				instances.add(new Instance(label, features));
 			}
 		}
+		return true;
 	}
 	
 }

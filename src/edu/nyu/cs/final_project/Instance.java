@@ -16,7 +16,11 @@ public class Instance implements Serializable{
 		this.label = label;
 		this.features = features;
 	}
-
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
 	public String getLabel() {
 		return label;
 	}
@@ -25,5 +29,11 @@ public class Instance implements Serializable{
 		return features;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("label: ").append(this.label).append("  features: ");
+		sb.append(Utility.featuresToString(this.features));
+		return sb.toString();
+	}
 }

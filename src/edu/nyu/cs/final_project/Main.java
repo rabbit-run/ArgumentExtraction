@@ -1,5 +1,6 @@
 package edu.nyu.cs.final_project;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,12 +20,39 @@ public class Main {
 			System.exit(-1);
 		}
 		String fileName = args[0];
-		InstanceGenerator ig = new InstanceGenerator(fileName);
-		ig.genInstanceFile();
+		// Generate instance file takes really loooooooooooong time
+		// be careful :)
+		if (!(new File(fileName + ".ser")).exists()) {
+			InstanceGenerator ig = new InstanceGenerator(fileName);
+			ig.genInstanceFile();
+		}
+		List<Instance> ins = Utility.deserialize(fileName + ".ser");
+		for (Instance i : ins) {
+			Utility.convertLabel(i);
+		}
+		SVMFileFormatter svm = new SVMFileFormatter(fileName, ins);
+		svm.formatSVMFile();
+	}
+	
+	private static void testLabel()	{
+		
+	}
+	
+	private static void testMatrix() {
+		int[][] M = new int[3][3];
+		for(int i = 1; i<=3; i++){
+			for (int j = 1; j<=3; j++){
+				M[i-1][j-1] = i*j;
+			}
+		}
+		
+		for (int i: M[1]) {
+			System.out.println(i);
+		}
 	}
 	
 	private static void testDeserialize() {
-		List<Instance> il = Utility.deserialize();
+		List<Instance> il = Utility.deserialize("");
 		List<Set<String>> features = il.get(0).getFeatures();
 		for (Set<String> s : features) {
 			System.out.println(s);
@@ -60,7 +88,15 @@ public class Main {
 	}
 	
 	private static void printSomeThing() {
-		System.out.println("/");
+		SentenceSplitter ss = new SentenceSplitter("dev");
+		List<List<String[]>> all = ss.getAllSentences();
+		List<String[]> sent = all.get(0);
+		System.out.println(Utility.sentenceLiteral(sent));
+		Trees.initial();
+		List<TypedDependency> tdl = Trees.genRawTree(Utility.sentenceLiteral(sent));
+		for (TypedDependency td : tdl) {
+			System.out.println(td);
+		}
 	}
 	
 	private static void testReplace() {
