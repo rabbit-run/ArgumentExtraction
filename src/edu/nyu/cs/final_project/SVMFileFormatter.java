@@ -19,11 +19,10 @@ public class SVMFileFormatter {
 		int[] kernels = new int[bound];
 		int outter, inner, res;
 		System.out.println("processing");
+		System.out.println("total: " + bound);		
 		for (outter = 0; outter<devIns.size(); outter++) {
 			//test
-			if (outter % 1000 == 0){
-				System.out.println("processed: " + outter);
-			}
+			System.out.println("processed: " + outter);
 			for (inner = 0; inner<bound; inner++) {
 				res = Utility.kernel(devIns.get(outter), ins.get(inner));
 				kernels[inner] = res;
