@@ -29,18 +29,18 @@ public class Main {
 		}
 		List<Instance> ins = Utility.deserialize(fileName + ".ser");
 		List<Instance> trainIns = Utility.deserialize("training_2458.ser");		
-		System.out.println(ins.size());
+		System.out.println(trainIns.size());
 		
-		//convert string label to int
-		Utility.convertLabel(trainIns);
-		Utility.convertLabel(ins);	
-		SVMFileFormatter svm = new SVMFileFormatter(fileName, ins);
-		if (type.equals("-train")) {
-			svm.formatSVMFile(12000);
-		}
-		else if (type.equals("-dev")){
-			svm.formatDevFile(ins, 12000);
-		}
+//		//convert string label to int
+//		Utility.convertLabel(trainIns);
+//		Utility.convertLabel(ins);	
+//		SVMFileFormatter svm = new SVMFileFormatter(fileName, trainIns);
+//		if (type.equals("-train")) {
+//			svm.formatSVMFile(12000);
+//		}
+//		else if (type.equals("-dev")){
+//			svm.formatDevFile(ins, 12000);
+//		}
 	}
 
 	private static void testLabel() {
